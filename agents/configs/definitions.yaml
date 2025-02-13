@@ -1,0 +1,80 @@
+# Definiciones para Configuración de Autónomos
+# Este archivo sirve como referencia para configurar nuevos autónomos
+
+# Estructura General
+structure:
+  name: string            # Nombre del autónomo
+  role: string           # Rol principal del autónomo
+  personality:           # Configuración de personalidad
+    type: string        # Tipo de personalidad (analytical, diplomatic, practical)
+    traits:            # Características de personalidad (0.0 a 1.0)
+      openness:        # Apertura a nuevas ideas y experiencias
+      conscientiousness: # Responsabilidad y atención al detalle
+      extraversion:    # Nivel de extroversión
+      agreeableness:   # Amabilidad y cooperación
+      neuroticism:     # Estabilidad emocional (menor = más estable)
+    values:           # Valores principales (0.0 a 1.0)
+      efficiency:     # Valoración de la eficiencia
+      creativity:     # Valoración de la creatividad
+      precision:      # Valoración de la precisión
+      collaboration:  # Valoración del trabajo en equipo
+
+# Comportamientos Disponibles
+behaviors:
+  research:
+    description: "Capacidad de investigación y análisis"
+    config_options:
+      max_depth: int     # Profundidad máxima de búsqueda
+      analysis_types:    # Tipos de análisis disponibles
+        - semantic      # Análisis semántico
+        - sentiment    # Análisis de sentimiento
+        - key_points   # Extracción de puntos clave
+      sources:         # Fuentes de información
+        - web         # Búsqueda web
+        - academic    # Papers académicos
+        - code_repos  # Repositorios de código
+  
+  summarize:
+    description: "Capacidad de resumir información"
+    config_options:
+      formats:         # Formatos de resumen disponibles
+        - bullet_points
+        - executive_summary
+        - detailed_report
+      max_length: int  # Longitud máxima del resumen
+      include_metadata: bool # Incluir metadatos
+
+# Plantillas de Respuesta
+response_templates:
+  description: "Plantillas para diferentes tipos de respuestas"
+  variables:
+    - "{topic}"    # Tema actual
+    - "{count}"    # Contador
+    - "{source}"   # Fuente de información
+  sections:
+    - start       # Mensajes de inicio
+    - progress    # Mensajes de progreso
+    - complete    # Mensajes de finalización
+
+# Manejo de Errores
+error_handling:
+  config_options:
+    retry_attempts: int     # Número de intentos
+    backoff_factor: float  # Factor de espera entre intentos
+    max_retries: int      # Máximo número de reintentos
+    error_messages: list  # Mensajes personalizados de error
+
+# Rangos y Valores
+ranges:
+  personality_traits: "0.0 a 1.0"
+  priority: "1 (más alto) a 5 (más bajo)"
+  max_depth: "1 a 5"
+  max_length: "100 a 10000"
+
+# Notas de Uso
+notes:
+  - "Todos los traits y values deben estar entre 0.0 y 1.0"
+  - "Las personalidades pueden ser combinadas y ajustadas"
+  - "Los comportamientos son modulares y pueden ser activados/desactivados"
+  - "Las plantillas de respuesta pueden ser personalizadas por autónomo"
+  - "El manejo de errores debe ser configurado según el caso de uso"

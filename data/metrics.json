@@ -1,0 +1,80 @@
+{
+  "cognitive_load": {
+    "interactions_per_hour": 2,
+    "complexity_score": 0.5032859399999999,
+    "override_rate": 0,
+    "interaction_history": [
+      {
+        "timestamp": "2025-02-13T09:25:15.086356",
+        "type": "request",
+        "complexity": 0.7
+      },
+      {
+        "timestamp": "2025-02-13T09:25:15.087399",
+        "type": "request",
+        "complexity": 0.65
+      },
+      {
+        "timestamp": "2025-02-13T09:25:51.958640",
+        "type": "request",
+        "complexity": 0.7
+      },
+      {
+        "timestamp": "2025-02-13T09:25:53.660688",
+        "type": "request",
+        "complexity": 0.65
+      },
+      {
+        "timestamp": "2025-02-13T09:39:14.116049",
+        "type": "research",
+        "complexity": 0.5
+      },
+      {
+        "timestamp": "2025-02-13T09:41:10.733770",
+        "type": "research",
+        "complexity": 0.5
+      },
+      {
+        "timestamp": "2025-02-13T09:41:20.120544",
+        "type": "task",
+        "complexity": 0.5
+      }
+    ]
+  },
+  "system_health": {
+    "response_time": 0,
+    "success_rate": 0,
+    "error_rate": 2,
+    "last_errors": [
+      {
+        "type": "workflow_error",
+        "workflow": "research",
+        "error": "'dict' object has no attribute 'lower'",
+        "timestamp": "2025-02-13T09:25:15.087231"
+      },
+      {
+        "type": "workflow_error",
+        "workflow": "task_management",
+        "error": "'dict' object has no attribute 'lower'",
+        "timestamp": "2025-02-13T09:25:15.087821"
+      }
+    ]
+  },
+  "autonomo_stats": {
+    "lucius": {
+      "tasks_completed": 11,
+      "avg_processing_time": 6.298369183200001e-06,
+      "handoff_success_rate": 0.4311999077235399
+    },
+    "mike": {
+      "tasks_completed": 3,
+      "avg_processing_time": 2.4679018,
+      "handoff_success_rate": 0.0975
+    },
+    "tom": {
+      "tasks_completed": 5,
+      "avg_processing_time": 0.000110598,
+      "handoff_success_rate": 0.18549375
+    }
+  }
+}

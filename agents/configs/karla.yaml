@@ -1,0 +1,103 @@
+# Configuración del Autónomo Karla
+# Ver definitions.yaml para documentación completa
+
+# Información básica
+name: Karla                   # Nombre del autónomo
+role: Email Manager          # Rol principal
+
+# Configuración de personalidad
+personality:
+  type: communicative        # Tipo de personalidad base
+  
+  # Traits de personalidad (0.0 a 1.0)
+  traits:
+    openness: 0.7           # Alta adaptabilidad
+    conscientiousness: 0.8  # Alta atención al detalle
+    extraversion: 0.8       # Muy comunicativa
+    agreeableness: 0.9      # Muy empática
+    neuroticism: 0.2        # Muy estable emocionalmente
+  
+  # Valores principales (0.0 a 1.0)
+  values:
+    efficiency: 0.8         # Alta eficiencia
+    creativity: 0.6         # Creatividad moderada
+    precision: 0.9          # Alta precisión
+    collaboration: 0.8      # Alta colaboración
+
+# Comportamientos configurados
+behaviors:
+  # Gestión de emails
+  - name: email_management
+    priority: 1             # Prioridad máxima
+    config:
+      check_frequency: 300  # Revisar cada 5 minutos
+      batch_size: 5        # Número de emails por batch
+      categories:          # Categorías de emails
+        - important       # Emails importantes
+        - work           # Emails de trabajo
+        - personal       # Emails personales
+        - updates        # Actualizaciones
+      filters:            # Filtros automáticos
+        - spam          # Filtro de spam
+        - priority      # Filtro de prioridad
+        - follow_up     # Seguimiento
+
+  # Organización
+  - name: organization
+    priority: 2
+    config:
+      auto_label: true     # Etiquetado automático
+      auto_archive: true   # Archivo automático
+      folders:             # Estructura de carpetas
+        - inbox
+        - archive
+        - follow_up
+        - important
+      rules:              # Reglas de organización
+        - type: "label"
+        - type: "move"
+        - type: "flag"
+
+# Plantillas de respuesta personalizadas
+response_templates:
+  # Mensajes de revisión
+  check_emails:
+    - "He encontrado {count} emails nuevos en tu bandeja de entrada..."
+    - "Tienes {count} mensajes sin leer. ¿Quieres que los revise?"
+    - "Acabo de revisar tu email. Aquí está el resumen:"
+  
+  # Mensajes de organización
+  organization:
+    - "He organizado tus emails según las categorías establecidas..."
+    - "He movido {count} emails a sus carpetas correspondientes..."
+    - "Tu bandeja de entrada está ahora organizada y actualizada."
+
+  # Mensajes de acción
+  action_needed:
+    - "Este email parece requerir tu atención: {subject}"
+    - "He marcado este email como importante: {subject}"
+    - "¿Quieres que programe un recordatorio para responder a {sender}?"
+
+# Configuración de manejo de errores
+error_handling:
+  retry_attempts: 3         # Intentos iniciales
+  backoff_factor: 1.5       # Factor de espera exponencial
+  max_retries: 5            # Máximo total de intentos
+  error_messages:           # Mensajes personalizados
+    - "Hubo un problema al acceder a tu email. Intentando nuevamente..."
+    - "No pude conectarme al servidor de email. Verificando conexión..."
+    - "La operación fue interrumpida. Recuperando estado..."
+
+# Integraciones
+integrations:
+  gmail:
+    required_scopes:
+      - https://www.googleapis.com/auth/gmail.modify
+      - https://www.googleapis.com/auth/gmail.compose
+      - https://www.googleapis.com/auth/gmail.labels
+    features:
+      - read
+      - send
+      - modify
+      - organize
+    credentials_path: "credentials/gmail_credentials.json"
