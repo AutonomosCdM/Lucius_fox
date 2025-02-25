@@ -1,10 +1,18 @@
 from typing import Dict, Any, List, Optional
 from datetime import datetime
+import re
+import asyncio
+import logging
+import json
+import os
+from slack_sdk import WebClient as SlackClient
+from slack_sdk.errors import SlackApiError
+
 from .base_agent import BaseAgent
 from services.gmail_service import GmailService
 
 class EmailAgent(BaseAgent):
-    def __init__(self):
+    def __init__(self, slack_config_path: Optional[str] = 'credentials/slack_config.json'):
         super().__init__(
             name="Karla",
             role="Email Manager",
@@ -14,6 +22,85 @@ class EmailAgent(BaseAgent):
         self.email_context: Dict[str, Any] = {}
         self.gmail_service = GmailService()
         self.last_emails: List[Dict[str, Any]] = []
+        
+        # Slack integration
+        self._slack_client = None
+        self._slack_config = self._load_slack_config(slack_config_path)
+        
+        # Initialize Slack client if configuration is enabled
+        if self._slack_config and self._slack_config.get('enabled', False):
+            try:
+                self._slack_client = SlackClient(token=self._slack_config['bot_oauth_token'])
+                logging.info("Slack client initialized successfully")
+            except Exception as e:
+                logging.error(f"Failed to initialize Slack client: {e}")
+        
+        # Advanced NLP setup
+        self._sensitive_keywords = [
+            'confidencial', 'urgente', 'crítico', 'importante', 
+            'legal', 'financiero', 'despido', 'contrato'
+        ]
+
+    def _load_slack_config(self, config_path: str) -> Optional[Dict[str, Any]]:
+        """
+        Load Slack configuration from JSON file
+        """
+        try:
+            with open(config_path, 'r') as config_file:
+                return json.load(config_file)
+        except FileNotFoundError:
+            logging.error(f"Slack configuration file not found: {config_path}")
+            return None
+        except json.JSONDecodeError:
+            logging.error(f"Invalid JSON in Slack configuration file: {config_path}")
+            return None
+
+    def _is_sensitive_email(self, email: Dict[str, Any]) -> bool:
+        """
+        Determine if an email is sensitive and requires human confirmation
+        """
+        # Check subject and body for sensitive keywords
+        subject = email.get('subject', '').lower()
+        body = email.get('body', '').lower()
+        
+        # Sentiment analysis
+        try:
+            sentiment = self._sentiment_analyzer(subject + " " + body)[0]
+            is_negative = sentiment['label'] == 'NEGATIVE' and sentiment['score'] > 0.7
+        except Exception:
+            is_negative = False
+        
+        # Keyword and sentiment-based sensitivity check
+        return (
+            any(keyword in subject or keyword in body for keyword in self._sensitive_keywords) or
+            is_negative
+        )
+
+    async def _request_human_confirmation(self, email: Dict[str, Any]) -> bool:
+        """
+        Request human confirmation for sensitive emails
+        """
+        confirmation_message = (
+            f"⚠️ Sensitive Email Detected\n"
+            f"From: {email.get('sender', 'Unknown')}\n"
+            f"Subject: {email.get('subject', 'No Subject')}\n"
+            f"Do you want to proceed? (yes/no)"
+        )
+        
+        # If Slack is configured, send confirmation request
+        if self._slack_client:
+            try:
+                response = self._slack_client.chat_postMessage(
+                    channel='#email-confirmations',  # Configure this channel
+                    text=confirmation_message
+                )
+                # TODO: Implement a way to capture user response
+                return True  # Placeholder
+            except SlackApiError as e:
+                logging.error(f"Slack confirmation failed: {e}")
+                return False
+        
+        return False  # Fallback if no confirmation method available
 
     def extract_email_intent(self, message: str) -> str:
         """Extract the main intent from an email-related message"""
@@ -85,6 +172,11 @@ class EmailAgent(BaseAgent):
                 # Format the response
                 response = "He encontrado los siguientes emails sin leer:\n\n"
                 for email in unread:
+                    # Check if email is sensitive
+                    if self._is_sensitive_email(email):
+                        # Request human confirmation for sensitive emails
+                        await self._request_human_confirmation(email)
+                    
                     response += f"- De: {email['sender']}\n"
                     response += f"  Asunto: {email['subject']}\n"
                     response += f"  Vista previa: {email['snippet']}\n\n"
@@ -139,6 +231,11 @@ class EmailAgent(BaseAgent):
 
                 response = f"He encontrado los siguientes emails relacionados con '{search_terms}':\n\n"
                 for email in results:
+                    # Check if email is sensitive
+                    if self._is_sensitive_email(email):
+                        # Request human confirmation for sensitive emails
+                        await self._request_human_confirmation(email)
+                    
                     response += f"- De: {email['sender']}\n"
                     response += f"  Asunto: {email['subject']}\n"
                     response += f"  Fecha: {email['date']}\n\n"
