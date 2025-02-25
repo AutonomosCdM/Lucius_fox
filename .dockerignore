@@ -39,7 +39,7 @@ ENV/
 *.swo
 
 # Credentials and sensitive data
-credentials/
+# credentials/ - Commented out to include credentials in the Docker image
 .env
 *.pem
 *.key
