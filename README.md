@@ -1,5 +1,7 @@
 # Sistema Autónomo Lucius Fox
 
+![CI](https://github.com/AutonomosCdM/Lucius_fox/actions/workflows/main.yml/badge.svg)
+
 ## Descripción
 Sistema de asistencia ejecutiva con múltiples agentes autónomos especializados en diferentes áreas, coordinados por Lucius Fox.
 
@@ -41,6 +43,21 @@ Ejecutar el sistema principal:
 python -m lucius_fox
 ```
 
+### Deployment
+Para desplegar el sistema en Render, tienes dos opciones:
+
+#### Opción 1: Usando la CLI de Render (Recomendado)
+```bash
+./scripts/render_cli_deploy.sh
+```
+
+#### Opción 2: Usando la API de Render
+```bash
+./scripts/deploy.sh
+```
+
+Para más detalles sobre el deployment, consultar la [documentación de deployment](docs/render_deployment.md).
+
 ## Agentes Disponibles
 - **Lucius Fox**: Coordinación general
 - **Mike**: Investigación y análisis
@@ -55,6 +72,10 @@ lucius_fox/
 ├── futures/         # Documentación de futuras implementaciones
 ├── docs/            # Documentación técnica
 ├── credentials/     # Credenciales de servicios externos
+├── scripts/         # Scripts de utilidad y deployment
+├── deploy_credentials/ # Credenciales preparadas para deployment
+├── Dockerfile       # Configuración de Docker
+├── .dockerignore    # Archivos excluidos del contexto de Docker
 ├── requirements.txt # Dependencias
 └── .gitignore       # Archivos excluidos del control de versiones
 ```
